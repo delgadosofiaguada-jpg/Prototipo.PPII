@@ -14,6 +14,7 @@
     --amber:#854f0b; --amber-soft:#faeeda; --amber-line:#fac775;
     --blue:#1d5b99; --blue-soft:#e7f0fa;
     --purple:#6b1d99; --purple-soft:#f3e7fa;
+    --debt:#7a1f2e; --debt-soft:#f6dfe1;
     --load-low:#9fe4c8; --load-mid:#f5cd6d; --load-full:#ef9a7c;
     --radius:10px;
     font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
@@ -71,6 +72,8 @@
   .btn-primary:hover{background:#0d604b;}
   .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink);}
   .btn-ghost:hover{background:var(--surface-2);}
+  .btn-anuncio{background:var(--blue);color:#fff; padding:6px 12px; font-size:12px;}
+  .btn-anuncio:hover{background:#154473;}
   .btn-wsp{background:#25D366;color:#fff;}
   .btn-wsp:hover{background:#20b958;}
   .err{color:var(--coral);font-size:12px;display:none;margin-top:6px;}
@@ -88,6 +91,10 @@
   .pill.cancelado{background:var(--coral-soft);color:var(--coral);}
   .pill.sala{background:var(--blue-soft);color:var(--blue);}
   .pill.consultorio{background:var(--purple-soft);color:var(--purple);}
+  .pill.deuda{background:var(--debt-soft);color:var(--debt);}
+
+  .estado-select{width:auto;padding:5px 8px;font-size:12px;border-radius:7px;}
+  .row-actions{display:flex;gap:6px;align-items:center;}
 
   /* odontologos */
   .odo-card{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface-2);cursor:pointer;}
@@ -102,6 +109,9 @@
   .reminder .txt{font-size:13px;}
   .reminder .txt b{font-weight:600;}
   .reminder .status{margin-left:auto;font-size:11px;color:var(--ink-mute);white-space:nowrap;align-self:center;}
+  .reminder .rem-del{border:none;background:transparent;color:var(--ink-mute);cursor:pointer;font-size:16px;padding:2px 6px;line-height:1;margin-left:8px; align-self:center;}
+  .reminder .rem-del:hover{color:var(--coral);}
+  
   .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line);}
   .toggle-row:first-child{border-top:none;}
   .switch{width:38px;height:22px;border-radius:20px;background:var(--line);position:relative;cursor:pointer;flex-shrink:0;}
@@ -121,10 +131,10 @@
 
   .pago-box{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;margin-bottom:10px;}
   .pago-box.al-dia{background:var(--teal-soft);}
-  .pago-box.atrasado{background:var(--coral-soft);}
+  .pago-box.atrasado{background:var(--debt-soft);}
   .pago-box .lbl{font-size:12px;font-weight:600;}
   .pago-box.al-dia .lbl{color:var(--teal);}
-  .pago-box.atrasado .lbl{color:var(--coral);}
+  .pago-box.atrasado .lbl{color:var(--debt);}
   .pago-box .sub2{font-size:11px;color:var(--ink-soft);}
 
   /* lista de espera */
@@ -157,6 +167,11 @@
   .mobile-card .actions button.atender{background:var(--purple);color:#fff;border-color:var(--purple);}
   .empty-mini{text-align:center;padding:24px 10px;color:var(--ink-mute);font-size:13px;}
 
+  /* Notificaciones al dentista */
+  .notif-banner{background:var(--blue-soft);border-left:4px solid var(--blue);border-radius:8px;padding:9px 10px;margin-bottom:10px;font-size:12px;display:flex;align-items:center;gap:8px;}
+  .notif-banner b{color:var(--blue);}
+  .notif-banner button{margin-left:auto;border:none;background:transparent;color:var(--ink-mute);cursor:pointer;font-size:14px;}
+
   /* odontograma */
   .odonto-grid{display:flex;flex-direction:column;gap:10px;margin:14px 0;background:var(--surface);padding:14px;border-radius:10px;border:1px solid var(--line);}
   .odonto-row{display:flex;justify-content:center;gap:4px;}
@@ -166,6 +181,25 @@
   .odonto-leyenda{display:flex;gap:10px;font-size:11px;color:var(--ink-soft);justify-content:center;margin-top:5px;}
   .odonto-leyenda span{display:flex;align-items:center;gap:4px;}
   .odonto-leyenda i{width:10px;height:10px;border-radius:2px;}
+
+  /* Lista de documentos */
+  .doc-item{display:flex;align-items:center;gap:8px;padding:8px 4px;border-bottom:1px solid var(--line);font-size:13px;}
+  .doc-item:last-child{border-bottom:none;}
+  .doc-tag{font-size:10px;padding:2px 8px;border-radius:12px;background:var(--blue-soft);color:var(--blue);font-weight:600;white-space:nowrap;}
+  .doc-name{flex:1;color:var(--ink);}
+  .doc-item button{border:none;background:transparent;font-size:12px;cursor:pointer;color:var(--ink-soft);font-weight:600;}
+  .doc-item button:hover{color:var(--teal);}
+  .doc-item button.doc-del:hover{color:var(--coral);}
+
+  /* Toast global */
+  .toast{position:fixed;top:18px;right:18px;background:var(--ink);color:#fff;padding:12px 16px;border-radius:10px;font-size:13px;max-width:320px;box-shadow:0 6px 20px rgba(0,0,0,.2);z-index:999;opacity:0;transform:translateY(-8px);transition:all .25s;}
+  .toast.show{opacity:1;transform:translateY(0);}
+
+  /* Modal de Documentos */
+  .modal-overlay { display:none; position:fixed; z-index:900; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; }
+  .modal-content { background:var(--surface); padding:20px; border-radius:12px; width:90%; max-width:700px; max-height:90vh; overflow-y:auto; position:relative;}
+  .modal-close { position:absolute; top:12px; right:16px; font-size:24px; cursor:pointer; color:var(--ink-soft); font-weight:bold; }
+  .modal-close:hover { color:var(--coral); }
 
   @media (max-width:760px){
     .cols-2, .cols-3{grid-template-columns:1fr;}
@@ -198,6 +232,7 @@
       <div class="card">
         <h2>Turnos del día</h2>
         <p class="sub" id="agenda-fecha">—</p>
+        <p class="sub" style="margin-top:-10px;">Anunciá la llegada del paciente para alertar al odontólogo en el consultorio.</p>
         <div id="agenda-list"></div>
       </div>
       <div>
@@ -300,9 +335,16 @@
         <div id="hist-pago"></div>
 
         <div style="display:flex; gap:10px; margin-bottom:16px;">
-            <button class="btn btn-ghost" style="flex:1; font-size:12px;">Adjuntar radiografía</button>
-            <button class="btn btn-ghost" style="flex:1; font-size:12px;">Exportar historia</button>
+            <button class="btn btn-ghost" id="btn-adjuntar-radio" style="flex:1; font-size:12px;">Adjuntar radiografía</button>
+            <button class="btn btn-ghost" id="btn-adjuntar-doc" style="flex:1; font-size:12px;">Adjuntar documento</button>
+            <button class="btn btn-ghost" id="btn-exportar" style="flex:1; font-size:12px;">Exportar historia</button>
         </div>
+        
+        <!-- Inputs ocultos para adjuntar -->
+        <input type="file" id="file-radio" accept="image/*,.pdf" style="display:none;">
+        <input type="file" id="file-doc" style="display:none;">
+        
+        <div id="hist-docs" style="margin-bottom:16px;"></div>
 
         <h3 style="margin-bottom:8px;">Evolución Clínica</h3>
         <div id="hist-list"></div>
@@ -344,7 +386,7 @@
     <div class="grid cols-2">
       <div class="card">
         <h2>Recordatorios enviados</h2>
-        <p class="sub">Se generan automáticamente al confirmar un turno</p>
+        <p class="sub">Se generan automáticamente al confirmar un turno. Si se cancela el turno, se borran automáticamente o podés hacerlo con la cruz.</p>
         <div id="rem-list"></div>
       </div>
       <div class="card">
@@ -374,6 +416,9 @@
         </div>
         <select class="picker" id="mo-select"></select>
       </div>
+      
+      <!-- Contenedor para Notificaciones de Pacientes en sala -->
+      <div id="mo-notifs"></div>
 
       <div class="seg" id="mo-main-nav">
         <button class="active" data-mv="turnos">Mis turnos</button>
@@ -436,9 +481,10 @@
           <textarea placeholder="Detallar procedimiento realizado..."></textarea>
 
           <h4 style="margin:16px 0 6px;">Receta Electrónica</h4>
-          <input type="text" placeholder="Medicamento (ej. Amoxicilina 500mg)" style="margin-bottom:6px;">
-          <input type="text" placeholder="Indicaciones (ej. 1 cada 8hs x 7 días)" style="margin-bottom:10px;">
-          <button class="btn btn-wsp" style="width:100%; font-size:12px;">Enviar receta por WhatsApp</button>
+          <input type="text" id="rx-med" placeholder="Medicamento (ej. Amoxicilina 500mg)" style="margin-bottom:6px;">
+          <input type="text" id="rx-ind" placeholder="Indicaciones (ej. 1 cada 8hs x 7 días)" style="margin-bottom:10px;">
+          <p class="sub" id="rx-tel-info" style="margin:0 0 10px; font-weight:600; color:var(--teal);">—</p>
+          <button class="btn btn-wsp" id="btn-enviar-receta" style="width:100%; font-size:12px;">Enviar receta por WhatsApp</button>
 
           <div class="actions" style="margin-top:20px; border-top:1px solid var(--line); padding-top:14px;">
             <button class="btn btn-primary" style="width:100%;" id="btn-finalizar-turno">Finalizar Consulta</button>
@@ -449,6 +495,17 @@
   </div>
 
 </div>
+
+<!-- Modal para adjuntar y visualizar documentos de forma segura -->
+<div id="doc-modal" class="modal-overlay">
+  <div class="modal-content">
+    <span class="modal-close" id="close-modal">&times;</span>
+    <h3 id="modal-title" style="margin-bottom:12px;">Documento Adjunto</h3>
+    <div id="modal-body" style="text-align:center;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 /* ---------- Datos base ---------- */
@@ -462,15 +519,18 @@ const pacientes = [
   {nombre:"Lucía Ferreyra", tel:"351 555-1023", os:"OSDE 210", fnac:"1990-03-14",
     alergias:"Alérgica a Penicilina e Ibuprofeno",
     pago:{estado:"al día", monto:0, fecha:null, coseguro:0},
-    hist:[{f:"12 jun 2026", d:"Limpieza y control general. Sin caries visibles."},{f:"02 mar 2026", d:"Obturación pieza 24"}]},
+    hist:[{f:"12 jun 2026", d:"Limpieza y control general. Sin caries visibles."},{f:"02 mar 2026", d:"Obturación pieza 24"}],
+    documentos:[]},
   {nombre:"Marcos Aguirre", tel:"351 555-0847", os:"Particular", fnac:"1985-11-22",
     alergias:"",
     pago:{estado:"atrasado", monto:15000, fecha:"20 ago 2026", coseguro:8500},
-    hist:[{f:"28 ago 2026", d:"Tratamiento de conducto (pieza 24), sesión 2/3."},{f:"14 ago 2026", d:"Diagnóstico y radiografía"}]},
+    hist:[{f:"28 ago 2026", d:"Tratamiento de conducto (pieza 24), sesión 2/3."},{f:"14 ago 2026", d:"Diagnóstico y radiografía"}],
+    documentos:[]},
   {nombre:"Valentina Ríos", tel:"351 555-3312", os:"Swiss Medical", fnac:"2002-07-03",
     alergias:"Asma leve",
     pago:{estado:"al día", monto:0, fecha:null, coseguro:2000},
-    hist:[{f:"05 sep 2026", d:"Colocación de brackets arco superior."}]}
+    hist:[{f:"05 sep 2026", d:"Colocación de brackets arco superior."}],
+    documentos:[]}
 ];
 
 const HOY_ISO = "2026-09-14";
@@ -514,12 +574,62 @@ let turnos = {
   ]
 };
 
+// --- MODIFICACIÓN DE LA LISTA DE ESPERA ---
 let waitlist = [
-  {nombre:"Martín López", nota:"Solicitó sobreturno · OSDE 210"}
+  {
+    nombre: "Martín López", 
+    horaSolicitud: "08:15", 
+    medicoId: 1, 
+    motivo: "Dolor agudo / Urgencia", 
+    os: "OSDE 210"
+  }
 ];
 
 function iso(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
 function odoName(id){return odontologos.find(o=>o.id===id)?.nombre||"";}
+
+/* ---------- Toast & Modal Setup ---------- */
+let toastTimer = null;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 3800);
+}
+
+const modal = document.getElementById('doc-modal');
+if(modal) {
+  document.getElementById('close-modal').addEventListener('click', () => modal.style.display = 'none');
+  window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+}
+
+/* ---------- Notificaciones al odontólogo ---------- */
+let notificaciones = [];
+function notificarOdontologo(odoId, texto){
+  notificaciones.unshift({id:Date.now()+Math.random(), odoId, texto, leida:false});
+  showToast(`Notificación enviada a ${odoName(odoId)}`);
+  renderMoNotifs();
+}
+function renderMoNotifs(){
+  const box = document.getElementById('mo-notifs');
+  if(!box) return;
+  const pendientes = notificaciones.filter(n=>n.odoId===miOdoId && !n.leida);
+  box.innerHTML = "";
+  pendientes.forEach(n=>{
+    const el = document.createElement('div');
+    el.className = "notif-banner";
+    el.innerHTML = `<span><b>Paciente en Sala:</b> ${n.texto}</span><button data-nid="${n.id}">✕</button>`;
+    box.appendChild(el);
+  });
+  box.querySelectorAll('[data-nid]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const n = notificaciones.find(x=>x.id==b.dataset.nid);
+      if(n) n.leida = true;
+      renderMoNotifs();
+    });
+  });
+}
 
 /* ---------- Navegación principal ---------- */
 function switchView(v){
@@ -528,6 +638,31 @@ function switchView(v){
   document.querySelectorAll('header > nav > button').forEach(b=>b.classList.toggle('active', b.dataset.v===v));
 }
 document.querySelectorAll('header > nav > button').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.v)));
+
+/* ---------- Control de Estados (Secretaría y Flujo) ---------- */
+function cambiarEstadoTurno(fecha, idx, nuevoEstado){
+  if(!nuevoEstado) return;
+  const t = turnos[fecha][idx];
+  const anterior = t.estado;
+  t.estado = nuevoEstado;
+
+  // Flujo: Notificar al odontólogo si el paciente entra a sala
+  if(nuevoEstado === "sala" && anterior !== "sala"){
+    notificarOdontologo(t.odo, `${t.paciente} ya está esperando (Turno ${t.hora}hs)`);
+  }
+  // Flujo: Borrar recordatorios automáticamente si se cancela
+  if(nuevoEstado === "cancelado"){
+    eliminarRecordatoriosDeTurno(t.paciente, fecha, t.hora);
+  }
+
+  renderAgenda(); renderWaitlist(); renderPacientes(document.getElementById('pac-search')?.value);
+  renderOdontologos();
+  if(fecha === HOY_ISO) renderMiAgenda();
+}
+// Botón explícito para uso rápido del secretario
+window.anunciarLlegada = function(fecha, idx) {
+  cambiarEstadoTurno(fecha, idx, "sala");
+};
 
 /* ---------- Agenda Clínica (Secretaría) ---------- */
 function renderAgenda(){
@@ -539,6 +674,7 @@ function renderAgenda(){
   let kpis = {sala:0, cons:0, conf:0, canc:0};
 
   list.slice().sort((a,b)=>a.hora.localeCompare(b.hora)).forEach(t=>{
+    const originalIndex = turnos[HOY_ISO].indexOf(t);
     const row = document.createElement('div');
     row.className = "row";
 
@@ -551,9 +687,23 @@ function renderAgenda(){
     if(t.estado==="sala") pillLabel = "En Sala";
     if(t.estado==="consultorio") pillLabel = "En Consultorio";
 
+    let accionesHTML = "";
+    if(t.estado === "pendiente" || t.estado === "confirmado") {
+      accionesHTML = `<button class="btn btn-anuncio" onclick="anunciarLlegada('${HOY_ISO}', ${originalIndex})">📍 Anunciar Llegada</button> 
+                      <select class="estado-select" onchange="cambiarEstadoTurno('${HOY_ISO}', ${originalIndex}, this.value)">
+                        <option value="">Cambiar...</option>
+                        <option value="cancelado">Cancelar Turno</option>
+                      </select>`;
+    } else {
+      const opciones = ["pendiente","confirmado","sala","consultorio","cancelado"]
+        .map(op=>`<option value="${op}" ${op===t.estado?"selected":""}>${op==="sala"?"En Sala":op==="consultorio"?"En Consultorio":op.charAt(0).toUpperCase()+op.slice(1)}</option>`).join("");
+      accionesHTML = `<select class="estado-select" onchange="cambiarEstadoTurno('${HOY_ISO}', ${originalIndex}, this.value)">${opciones}</select>`;
+    }
+
     row.innerHTML = `<div class="time">${t.hora}</div>
-      <div class="who"><div class="name">${t.paciente}</div><div class="meta">${odoName(t.odo)}</div></div>
-      <span class="pill ${t.estado}">${pillLabel}</span>`;
+      <div class="who"><div class="name">${t.paciente}</div><div class="meta">Con ${odoName(t.odo)}</div></div>
+      <span class="pill ${t.estado}">${pillLabel}</span>
+      <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">${accionesHTML}</div>`;
     box.appendChild(row);
   });
 
@@ -563,6 +713,7 @@ function renderAgenda(){
   document.getElementById('kpi-canc').textContent = kpis.canc;
 }
 
+// --- MODIFICACIÓN DE LA FUNCIÓN DE LISTA DE ESPERA ---
 function renderWaitlist(){
   const box = document.getElementById('waitlist-box');
   box.innerHTML = "";
@@ -573,11 +724,20 @@ function renderWaitlist(){
   waitlist.forEach((w,i)=>{
     const card = document.createElement('div');
     card.className = "waitlist-card";
-    card.innerHTML = `<div class="wl-name">${w.nombre}</div>
-      <div class="wl-meta">${w.nota}</div>
-      <button class="btn btn-ghost" data-wl="${i}" style="width:100%; padding:6px; font-size:11px; margin-top:8px;">Asignar próximo turno cancelado</button>`;
+    
+    // Obtenemos el nombre del médico usando su ID
+    const nombreMedico = odoName(w.medicoId);
+
+    card.innerHTML = `
+      <div class="wl-name">${w.nombre}</div>
+      <div class="wl-meta">Solicitó: <b>${w.horaSolicitud} hs</b> · ${w.os}</div>
+      <div class="wl-meta" style="margin-top:6px; color:var(--ink);"><b>Con:</b> ${nombreMedico}</div>
+      <div class="wl-meta" style="margin-top:2px;"><b>Motivo:</b> ${w.motivo}</div>
+      <button class="btn btn-ghost" data-wl="${i}" style="width:100%; padding:6px; font-size:11px; margin-top:10px;">Asignar a próximo turno cancelado</button>
+    `;
     box.appendChild(card);
   });
+
   box.querySelectorAll('[data-wl]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const i = parseInt(btn.dataset.wl);
@@ -586,6 +746,8 @@ function renderWaitlist(){
       if(libre){
         libre.paciente = w.nombre;
         libre.estado = "confirmado";
+        // Asignamos automáticamente el odontólogo solicitado por el paciente
+        libre.odo = w.medicoId; 
         renderAgenda();
       }
       waitlist.splice(i,1);
@@ -706,13 +868,15 @@ document.getElementById('btn-confirmar').addEventListener('click', ()=>{
       fnac: document.getElementById('f-fnac').value.trim(),
       alergias: "",
       pago:{estado:"al día", monto:0, fecha:null, coseguro:0},
-      hist:[]
+      hist:[], documentos:[]
     });
     fillPacDatalist();
   }
 
   if(!turnos[selectedDate]) turnos[selectedDate] = [];
   turnos[selectedDate].push({hora:selectedSlot, paciente:pac, odo:parseInt(document.getElementById('f-odo').value), estado:"pendiente"});
+  
+  // Agregar automáticamente al listado de recordatorios
   crearRecordatorio(pac, selectedDate, selectedSlot);
 
   document.getElementById('f-pac').value=""; document.getElementById('f-motivo').value="";
@@ -733,11 +897,12 @@ document.getElementById('btn-limpiar').addEventListener('click', ()=>{
 
 /* ---------- Pacientes: búsqueda, filtros y ficha ---------- */
 let pacFiltroActivo = "todos";
+let histIndexActual = 0;
 
 function estadoPaciente(nombre){
   const todosTurnos = Object.values(turnos).flat().filter(t=>t.paciente===nombre);
   return {
-    pendiente: todosTurnos.some(t=>t.estado==="pendiente"),
+    pendiente: todosTurnos.some(t=>t.estado==="pendiente" || t.estado==="confirmado"),
     cancelado: todosTurnos.some(t=>t.estado==="cancelado")
   };
 }
@@ -767,14 +932,17 @@ function renderPacientes(filtroTexto){
     row.className = "row";
     row.style.cursor = "pointer";
     let tags = "";
-    if(p.pago.estado==="atrasado") tags += `<span class="pill cancelado">deuda</span>`;
-    if(est.pendiente) tags += `<span class="pill pendiente">pendiente</span>`;
-    if(est.cancelado) tags += `<span class="pill cancelado">canceló</span>`;
-    row.innerHTML = `<div class="who"><div class="name">${p.nombre}</div><div class="meta">${p.tel} · ${p.os}</div></div><div style="display:flex;gap:4px;">${tags}</div>`;
+    
+    // Clara diferenciación entre deuda y turno pendiente
+    if(p.pago.estado==="atrasado") tags += `<span class="pill deuda">Deuda: $${p.pago.monto.toLocaleString('es-AR')}</span>`;
+    if(est.pendiente) tags += `<span class="pill pendiente">Turno Pendiente</span>`;
+    if(est.cancelado) tags += `<span class="pill cancelado">Canceló</span>`;
+    
+    row.innerHTML = `<div class="who"><div class="name">${p.nombre}</div><div class="meta">${p.tel} · ${p.os}</div></div><div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">${tags}</div>`;
     row.addEventListener('click', ()=>renderHistorial(i));
     box.appendChild(row);
   });
-  if(filtroTexto===undefined) renderHistorial(pacientes.findIndex(p=>p.nombre===filtrados[0].p.nombre));
+  if(filtroTexto===undefined && filtrados.length > 0) renderHistorial(filtrados[0].i);
 }
 document.getElementById('pac-search').addEventListener('input', (e)=>renderPacientes(e.target.value));
 document.querySelectorAll('[data-pf]').forEach(btn=>{
@@ -787,6 +955,7 @@ document.querySelectorAll('[data-pf]').forEach(btn=>{
 });
 
 function renderHistorial(i){
+  histIndexActual = i;
   const p = pacientes[i];
   document.getElementById('hist-nombre').textContent = p.nombre + " — " + p.os + (p.fnac ? " · nac. "+p.fnac : "");
 
@@ -800,7 +969,7 @@ function renderHistorial(i){
 
   if(p.pago.estado === "atrasado"){
     pagoBox.innerHTML = `<div class="pago-box atrasado">
-      <div><div class="lbl">Saldo pendiente</div><div class="sub2">Desde ${p.pago.fecha}</div></div>
+      <div><div class="lbl">Deuda registrada</div><div class="sub2">Desde ${p.pago.fecha}</div></div>
       <div class="lbl">$${p.pago.monto.toLocaleString('es-AR')}</div>
     </div>
     <div class="pago-box al-dia" style="background:var(--surface-2); border:1px solid var(--line);">
@@ -808,7 +977,7 @@ function renderHistorial(i){
     </div>`;
   } else {
     pagoBox.innerHTML = `<div class="pago-box al-dia">
-      <div><div class="lbl">Administración</div><div class="sub2">${textoCoseguro}</div></div>
+      <div><div class="lbl">Administración (Al día)</div><div class="sub2">${textoCoseguro}</div></div>
     </div>`;
   }
 
@@ -816,15 +985,104 @@ function renderHistorial(i){
   box.innerHTML = "";
   if(!p.hist.length){
     box.innerHTML = "<p class='sub'>Todavía no registra tratamientos.</p>";
+  } else {
+    p.hist.forEach(h=>{
+      const el = document.createElement('div');
+      el.className = "history-item";
+      el.innerHTML = `<div class="date">${h.f}</div><div class="desc">${h.d}</div>`;
+      box.appendChild(el);
+    });
+  }
+  
+  renderDocumentos(i);
+}
+
+/* ---------- Documentos y Radiografías (Subida y Visor) ---------- */
+function renderDocumentos(i){
+  const p = pacientes[i];
+  if(!p.documentos) p.documentos = [];
+  const box = document.getElementById('hist-docs');
+  box.innerHTML = "";
+  if(!p.documentos.length){
+    box.innerHTML = "<p class='sub' style='margin:0 0 8px;'>Sin documentos adjuntos.</p>";
     return;
   }
-  p.hist.forEach(h=>{
-    const el = document.createElement('div');
-    el.className = "history-item";
-    el.innerHTML = `<div class="date">${h.f}</div><div class="desc">${h.d}</div>`;
-    box.appendChild(el);
+  p.documentos.forEach((d,di)=>{
+    const row = document.createElement('div');
+    row.className = "doc-item";
+    row.innerHTML = `<span class="doc-tag">${d.tipo}</span><span class="doc-name">${d.nombre}</span>
+      <button data-view="${di}">Ver</button>
+      <button class="doc-del" data-del="${di}">Quitar</button>`;
+    box.appendChild(row);
+  });
+
+  // Visor seguro utilizando Modal para evitar bloqueos emergentes
+  box.querySelectorAll('[data-view]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const d = p.documentos[parseInt(b.dataset.view)];
+      document.getElementById('modal-title').textContent = d.nombre;
+      
+      const modalBody = document.getElementById('modal-body');
+      if (d.data.includes('image')) {
+          modalBody.innerHTML = `<img src="${d.data}" style="max-width:100%; max-height:70vh; border-radius:8px;">`;
+      } else {
+          modalBody.innerHTML = `<iframe src="${d.data}" style="width:100%; height:70vh; border:none; border-radius:8px;"></iframe>`;
+      }
+      modal.style.display = 'flex';
+    });
+  });
+
+  box.querySelectorAll('[data-del]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      p.documentos.splice(parseInt(b.dataset.del),1);
+      renderDocumentos(i);
+    });
   });
 }
+
+function adjuntarArchivo(file, tipo){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const p = pacientes[histIndexActual];
+    if(!p.documentos) p.documentos = [];
+    p.documentos.push({nombre:file.name, tipo, data:reader.result, fecha:new Date().toLocaleDateString('es-AR')});
+    renderDocumentos(histIndexActual);
+    showToast(`${tipo} cargada exitosamente en la ficha de ${p.nombre}`);
+  };
+  reader.readAsDataURL(file);
+}
+document.getElementById('btn-adjuntar-radio').addEventListener('click', ()=>document.getElementById('file-radio').click());
+document.getElementById('btn-adjuntar-doc').addEventListener('click', ()=>document.getElementById('file-doc').click());
+document.getElementById('file-radio').addEventListener('change', (e)=>{ adjuntarArchivo(e.target.files[0], "Radiografía"); e.target.value=""; });
+document.getElementById('file-doc').addEventListener('change', (e)=>{ adjuntarArchivo(e.target.files[0], "Documento"); e.target.value=""; });
+
+/* ---------- Exportar Historia Clínica ---------- */
+document.getElementById('btn-exportar').addEventListener('click', ()=>{
+  const p = pacientes[histIndexActual];
+  let txt = `FICHA CLÍNICA - DENTAL SUR\n==========================\n\n`;
+  txt += `Paciente: ${p.nombre}\nTeléfono: ${p.tel}\nObra social: ${p.os}\nFecha de nacimiento: ${p.fnac||'-'}\n`;
+  txt += `Alertas Médicas: ${p.alergias || 'Ninguna registrada'}\n\n`;
+  txt += `--- ESTADO DE CUENTA ---\n`;
+  txt += p.pago.estado === "atrasado"
+    ? `> DEUDA ACTIVA: $${p.pago.monto.toLocaleString('es-AR')} (Registrada el ${p.pago.fecha})\n`
+    : `> Al día. Sin deudas registradas.\n`;
+  txt += `\n--- EVOLUCIÓN CLÍNICA ---\n`;
+  (p.hist||[]).forEach(h=> txt += `[${h.f}] ${h.d}\n`);
+  txt += `\n--- DOCUMENTOS ADJUNTOS ---\n`;
+  if(!(p.documentos||[]).length) txt += "Sin documentos adjuntos.\n";
+  else p.documentos.forEach(d=> txt += `- [${d.tipo}] ${d.nombre} (${d.fecha})\n`);
+
+  const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; 
+  a.download = `Historia_${p.nombre.replace(/\s+/g,'_')}.txt`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`Historia clínica de ${p.nombre} exportada.`);
+});
+
 
 /* ---------- Odontólogos: grid + detalle lista/calendario ---------- */
 let odoDetailId = 1;
@@ -927,11 +1185,10 @@ document.querySelectorAll('[data-ov]').forEach(btn=>{
   });
 });
 
-/* ---------- Recordatorios ---------- */
+/* ---------- Recordatorios (Auto y Manual) ---------- */
 let recordatorios = [
-  {who:"Lucía Ferreyra", when:"14 sep · 09:00", ch:"WhatsApp", st:"Enviado"},
-  {who:"Marcos Aguirre", when:"14 sep · 11:00", ch:"Email", st:"Enviado"},
-  {who:"Valentina Ríos", when:"15 sep · 10:00", ch:"WhatsApp", st:"Programado"}
+  {who:"Lucía Ferreyra", when:"14 sep · 09:00", ch:"WhatsApp", st:"Programado", fechaISO:"2026-09-14", hora:"09:00"},
+  {who:"Valentina Ríos", when:"14 sep · 16:00", ch:"Email", st:"Programado", fechaISO:"2026-09-14", hora:"16:00"}
 ];
 
 function canalActivo(){
@@ -941,24 +1198,42 @@ function canalActivo(){
 }
 function crearRecordatorio(paciente, fechaISO, hora){
   const fechaLegible = new Date(fechaISO+"T00:00").toLocaleDateString('es-AR',{day:'numeric',month:'short'});
-  recordatorios.unshift({who:paciente, when:`${fechaLegible} · ${hora}`, ch:canalActivo(), st:"Programado"});
+  recordatorios.unshift({who:paciente, when:`${fechaLegible} · ${hora}`, ch:canalActivo(), st:"Programado", fechaISO, hora});
+  renderRecordatorios();
+}
+// Flujo: Borrado Automático al Cancelar
+function eliminarRecordatoriosDeTurno(paciente, fechaISO, hora){
+  const preLen = recordatorios.length;
+  recordatorios = recordatorios.filter(r => !(r.who===paciente && r.fechaISO===fechaISO && r.hora===hora));
+  if(recordatorios.length !== preLen){
+      showToast(`Recordatorio de ${paciente} anulado automáticamente.`);
+  }
+  renderRecordatorios();
+}
+// Flujo: Borrado Manual con Botón 'X'
+function eliminarRecordatorioManual(idx){
+  recordatorios.splice(idx,1);
   renderRecordatorios();
 }
 function renderRecordatorios(){
   const box = document.getElementById('rem-list');
   box.innerHTML = "";
   if(!recordatorios.length){
-    box.innerHTML = "<p class='sub'>Todavía no hay recordatorios generados.</p>";
+    box.innerHTML = "<p class='sub'>Todavía no hay recordatorios programados.</p>";
     return;
   }
-  recordatorios.forEach(r=>{
+  recordatorios.forEach((r,idx)=>{
     const el = document.createElement('div');
     el.className = "reminder";
     const icon = r.st==="Enviado" ? "✓" : "⏱";
     el.innerHTML = `<div class="icon">${icon}</div>
       <div class="txt"><b>${r.who}</b><br>Turno ${r.when} · vía ${r.ch}</div>
-      <div class="status">${r.st}</div>`;
+      <div class="status">${r.st}</div>
+      <button class="rem-del" data-ridx="${idx}" title="Eliminar recordatorio">✕</button>`;
     box.appendChild(el);
+  });
+  box.querySelectorAll('[data-ridx]').forEach(b=>{
+    b.addEventListener('click', ()=>eliminarRecordatorioManual(parseInt(b.dataset.ridx)));
   });
 }
 document.querySelectorAll('.switch').forEach(s=>{
@@ -971,6 +1246,7 @@ let miOdoId = 1;
 let moCalRef = new Date(2026,8,1);
 let moSelectedDate = HOY_ISO;
 let turnoActivoIndex = null;
+let atenPacienteTel = ""; // Teléfono guardado para enviar receta
 
 function fillMoSelect(){
   const sel = document.getElementById('mo-select');
@@ -1002,8 +1278,8 @@ function renderMiAgenda(){
       let actionsHTML = "";
       if(t.estado === "sala"){
         actionsHTML = `<button class="atender" onclick="abrirAtencion('${t.paciente}', '${t.hora}', ${idxReal})">Llamar a Consultorio</button>`;
-      } else if(t.estado === "pendiente" || t.estado === "confirmado"){
-        actionsHTML = `<button class="done" onclick="marcarLlegada(${idxReal})">Llegó a Sala</button>`;
+      } else if(t.estado === "consultorio"){
+        actionsHTML = `<button class="atender" style="opacity:0.5; pointer-events:none;">Paciente Adentro</button>`;
       }
 
       card.innerHTML = `
@@ -1015,11 +1291,7 @@ function renderMiAgenda(){
     });
   }
   renderMoCalendario();
-}
-
-function marcarLlegada(index){
-  turnos[HOY_ISO][index].estado = "sala";
-  renderMiAgenda(); renderAgenda();
+  renderMoNotifs();
 }
 
 function abrirAtencion(pacienteNombre, hora, index){
@@ -1037,13 +1309,35 @@ function abrirAtencion(pacienteNombre, hora, index){
 
   document.getElementById('aten-hora').textContent = hora;
   document.getElementById('aten-paciente').textContent = pacienteNombre;
-
+  
+  // Extraer el teléfono guardado para enviar la receta
   const pacData = pacientes.find(p=>p.nombre === pacienteNombre);
+  atenPacienteTel = pacData ? pacData.tel : "";
+  document.getElementById('rx-tel-info').textContent = atenPacienteTel
+    ? `Destino: ${atenPacienteTel} (Extraído de su ficha)`
+    : "Sin teléfono registrado para enviar receta.";
+
   const alertasBox = document.getElementById('aten-alertas');
   alertasBox.innerHTML = (pacData && pacData.alergias)
     ? `<div class="alerta-medica" style="padding:6px; margin-bottom:10px;"><span>Alerta:</span> ${pacData.alergias}</div>`
     : "";
 }
+
+// Botón: Enviar receta tomando los datos de la ficha
+document.getElementById('btn-enviar-receta').addEventListener('click', ()=>{
+  const med = document.getElementById('rx-med').value.trim();
+  const ind = document.getElementById('rx-ind').value.trim();
+  
+  if(!atenPacienteTel){ showToast("No hay teléfono registrado para este paciente."); return; }
+  if(!med){ showToast("Escribí un medicamento para poder enviar la receta."); return; }
+  
+  const digits = atenPacienteTel.replace(/\D/g,'');
+  const mensaje = `Hola, te envío la receta electrónica desde Dental Sur:\n\nPaciente: ${document.getElementById('aten-paciente').textContent}\nMedicamento: ${med}\nIndicaciones: ${ind || 'Según indicación médica.'}`;
+  
+  window.open(`https://wa.me/54${digits}?text=${encodeURIComponent(mensaje)}`, '_blank');
+  showToast("Abriendo WhatsApp...");
+});
+
 
 document.getElementById('btn-finalizar-turno').addEventListener('click', ()=>{
   if(turnoActivoIndex !== null){
