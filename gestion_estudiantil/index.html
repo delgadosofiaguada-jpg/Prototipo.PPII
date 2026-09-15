@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGE — Sistema Integral de Gestión Escolar</title>
+<style>
+  :root{
+    --ink:#1c2b24;
+    --ink-soft:#4a5a52;
+    --paper:#f6f4ee;
+    --panel:#ffffff;
+    --line:#dcd8cc;
+    --green:#2f5d4f;
+    --green-deep:#20433a;
+    --amber:#b97a2c;
+    --red:#a3413a;
+    --blue:#3a5a78;
+    --radius:6px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+    font-size:14px;
+  }
+  .app{display:flex;min-height:100vh;}
+
+  /* Sidebar */
+  .sidebar{width:230px;background:var(--green-deep);color:#e9efe9;display:flex;flex-direction:column;flex-shrink:0;}
+  .brand{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.12);}
+  .brand-name{font-family:Georgia,serif;font-size:20px;letter-spacing:.02em;}
+  .brand-sub{font-size:11px;color:#b7c9bf;margin-top:3px;letter-spacing:.03em;}
+  .role-switch{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.12);}
+  .role-switch label{display:block;font-size:10.5px;color:#9fb5aa;margin-bottom:6px;letter-spacing:.04em;}
+  .role-switch select{width:100%;padding:7px 8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:4px;font-size:13px;}
+  .role-switch select option{color:#1c2b24;}
+  nav{flex:1;padding:10px 0;}
+  .nav-item{display:block;width:100%;text-align:left;padding:11px 20px;background:none;border:none;color:#cfe0d6;font-size:13.5px;cursor:pointer;border-left:3px solid transparent;}
+  .nav-item:hover{background:rgba(255,255,255,.05);}
+  .nav-item.active{background:rgba(255,255,255,.08);border-left-color:var(--amber);color:#fff;font-weight:600;}
+  .sidebar-foot{padding:14px 20px;font-size:11px;color:#8fa79b;border-top:1px solid rgba(255,255,255,.12);}
+
+  /* Main */
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;}
+  header.topbar{background:var(--panel);border-bottom:1px solid var(--line);padding:16px 28px;display:flex;justify-content:space-between;align-items:baseline;}
+  header.topbar h1{font-family:Georgia,serif;font-size:19px;font-weight:600;margin:0;}
+  header.topbar .meta{font-size:12px;color:var(--ink-soft);}
+  .content{padding:24px 28px 40px;flex:1;}
+
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;}
+  .stat .n{font-size:26px;font-weight:600;font-family:Georgia,serif;}
+  .stat .l{font-size:11.5px;color:var(--ink-soft);margin-top:2px;letter-spacing:.02em;}
+  .stat.warn .n{color:var(--amber);}
+  .stat.bad .n{color:var(--red);}
+  .stat.good .n{color:var(--green);}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:18px;}
+  .panel h2{font-family:Georgia,serif;font-size:15.5px;margin:0 0 4px;}
+  .panel .sub{font-size:12px;color:var(--ink-soft);margin-bottom:14px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-size:11px;letter-spacing:.03em;color:var(--ink-soft);border-bottom:1px solid var(--line);padding:6px 8px;font-weight:600;}
+  td{padding:8px 8px;border-bottom:1px solid #ece9df;}
+  tr:last-child td{border-bottom:none;}
+
+  .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+  .badge.presente{background:#e4efe8;color:var(--green);}
+  .badge.ausente{background:#f5e4e2;color:var(--red);}
+  .badge.tarde{background:#f6ecd8;color:var(--amber);}
+  .badge.justificado{background:#e5edf3;color:var(--blue);}
+  .badge.leve{background:#f6ecd8;color:var(--amber);}
+  .badge.grave{background:#f5e4e2;color:var(--red);}
+  .badge.disponible{background:#e4efe8;color:var(--green);}
+  .badge.reservado{background:#e5edf3;color:var(--blue);}
+  .badge.alerta{background:#f5e4e2;color:var(--red);}
+
+  .btn{padding:7px 14px;background:var(--green);color:#fff;border:none;border-radius:5px;font-size:12.5px;cursor:pointer;font-weight:600;}
+  .btn:hover{background:var(--green-deep);}
+  .btn.ghost{background:none;border:1px solid var(--line);color:var(--ink);}
+  .btn.ghost:hover{border-color:var(--green);color:var(--green);}
+  .btn.small{padding:4px 10px;font-size:11.5px;}
+
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+  select,input[type=text],input[type=date],input[type=file]{padding:6px 9px;border:1px solid var(--line);border-radius:5px;font-size:12.5px;background:#fff;color:var(--ink);}
+
+  .roster-row{display:flex;align-items:center;justify-content:space-between;padding:9px 4px;border-bottom:1px solid #ece9df;}
+  .roster-row:last-child{border-bottom:none;}
+  .roster-name{font-size:13.5px;}
+  .roster-sub{font-size:11px;color:var(--ink-soft);}
+  .att-buttons{display:flex;gap:5px;}
+  .att-btn{padding:4px 9px;border-radius:4px;border:1px solid var(--line);background:#fff;font-size:11px;cursor:pointer;color:var(--ink-soft);}
+  .att-btn.sel-presente.selected{background:var(--green);color:#fff;border-color:var(--green);}
+  .att-btn.sel-ausente.selected{background:var(--red);color:#fff;border-color:var(--red);}
+  .att-btn.sel-tarde.selected{background:var(--amber);color:#fff;border-color:var(--amber);}
+  .att-btn.sel-justificado.selected{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+  .notice{border-left:3px solid var(--amber);background:#fbf5e9;padding:10px 14px;font-size:12.5px;border-radius:0 5px 5px 0;margin-bottom:16px;color:#6b4a17;}
+  .alert-row{border-left:3px solid var(--red);background:#fbecea;padding:9px 12px;font-size:12.5px;border-radius:0 5px 5px 0;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+  .alert-row.warn{border-left-color:var(--amber);background:#fbf5e9;}
+  .readonly-tag{font-size:10.5px;color:var(--ink-soft);border:1px solid var(--line);padding:2px 7px;border-radius:20px;margin-left:8px;}
+  .two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;}
+  .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+  @media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr);} .two-col,.three-col{grid-template-columns:1fr;}}
+
+  form.stack{display:flex;flex-direction:column;gap:10px;max-width:420px;}
+  form.stack label{font-size:12px;color:var(--ink-soft);}
+  textarea{padding:8px;border:1px solid var(--line);border-radius:5px;font-family:inherit;font-size:13px;resize:vertical;min-height:70px;}
+
+  /* Calendario de recursos */
+  .cal-wrap{overflow-x:auto;}
+  .cal-grid{display:grid;grid-template-columns:70px repeat(5,1fr);min-width:760px;border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+  .cal-head{background:#eef0ea;font-size:11.5px;font-weight:600;padding:8px 6px;text-align:center;border-bottom:1px solid var(--line);border-left:1px solid var(--line);}
+  .cal-head:first-child{border-left:none;}
+  .cal-time{font-size:10.5px;color:var(--ink-soft);padding:6px 6px;text-align:right;border-top:1px solid var(--line);background:#faf9f5;}
+  .cal-cell{border-top:1px solid var(--line);border-left:1px solid var(--line);min-height:44px;padding:3px;cursor:pointer;position:relative;}
+  .cal-cell:hover{background:#f2f6f3;}
+  .cal-cell .ev{background:var(--blue);color:#fff;font-size:10.5px;border-radius:4px;padding:3px 5px;line-height:1.25;cursor:default;}
+  .cal-cell .ev.mine{background:var(--green);}
+  .cal-legend{display:flex;gap:14px;margin-top:10px;font-size:11.5px;color:var(--ink-soft);align-items:center;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;}
+
+  /* Modal */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(28,43,36,.45);align-items:center;justify-content:center;z-index:50;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:#fff;border-radius:8px;padding:22px 24px;width:380px;max-width:90vw;}
+  .modal h3{margin:0 0 4px;font-family:Georgia,serif;font-size:16px;}
+  .modal .sub{font-size:12px;color:var(--ink-soft);margin-bottom:14px;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;}
+  .file-hint{font-size:11px;color:var(--ink-soft);margin-top:4px;}
+  .file-chip{display:inline-flex;align-items:center;gap:6px;background:#eef0ea;border-radius:20px;padding:3px 10px;font-size:11px;margin-top:6px;}
+
+  /* Charts */
+  .chart-bars{display:flex;align-items:flex-end;gap:10px;height:140px;padding-top:10px;}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+  .bar{width:100%;max-width:34px;border-radius:4px 4px 0 0;background:var(--green);}
+  .bar-label{font-size:10.5px;color:var(--ink-soft);margin-top:6px;text-align:center;}
+  .bar-value{font-size:11px;font-weight:600;margin-bottom:3px;}
+  .donut-wrap{display:flex;align-items:center;gap:18px;}
+
+  .toggle-btn{
+    padding:6px 14px;font-size:12px;background:#fff;border:none;
+    border-left:1px solid var(--line);color:var(--ink-soft);cursor:pointer;
+  }
+  .toggle-btn:first-child{border-left:none;}
+  .toggle-btn.active{background:var(--green);color:#fff;font-weight:600;}
+  .list-btn{
+    padding:3px 9px;border:1px solid var(--line);border-radius:4px;background:#fff;
+    font-size:11px;color:var(--ink-soft);cursor:pointer;
+  }
+  .list-btn:hover{border-color:var(--red);color:var(--red);}
+  .legend-item{display:flex;align-items:center;font-size:12px;margin-bottom:6px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-name">SIGE</div>
+      <div class="brand-sub">Nuestra Señora del Valle</div>
+    </div>
+    <div class="role-switch">
+      <label>VER COMO</label>
+      <select id="roleSelect" onchange="setRole(this.value)">
+        <option value="preceptor">Preceptor</option>
+        <option value="docente">Docente</option>
+        <option value="directivo">Directivo</option>
+      </select>
+    </div>
+    <nav id="navList"></nav>
+    <div class="sidebar-foot">Prototipo — PP2 / Relevamiento<br>v0.4</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <h1 id="viewTitle">Panel general</h1>
+      <div class="meta" id="viewMeta">Preceptor — 4°B</div>
+    </header>
+
+    <div class="content">
+
+      <!-- DASHBOARD PRECEPTOR/DOCENTE -->
+      <section class="view active" id="view-dashboard">
+        <div class="grid">
+          <div class="stat"><div class="n">92%</div><div class="l">ASISTENCIA HOY (COLEGIO)</div></div>
+          <div class="stat warn"><div class="n">7</div><div class="l">AUSENTES SIN JUSTIFICAR</div></div>
+          <div class="stat bad"><div class="n">2</div><div class="l">INCIDENTES ABIERTOS</div></div>
+          <div class="stat good"><div class="n">5</div><div class="l">RECURSOS RESERVADOS HOY</div></div>
+        </div>
+        <div class="two-col">
+          <div class="panel">
+            <h2>Últimos incidentes de convivencia</h2>
+            <div class="sub">Actualizado en tiempo real desde el registro de preceptores y docentes</div>
+            <table>
+              <tr><th>Alumno</th><th>Curso</th><th>Motivo</th><th>Severidad</th><th>Estado</th></tr>
+              <tr><td>T. Ferreyra</td><td>3°A</td><td>Falta de material reiterada</td><td><span class="badge leve">Leve</span></td><td>Registrado</td></tr>
+              <tr><td>M. Aguirre</td><td>5°C</td><td>Conflicto entre pares</td><td><span class="badge grave">Grave</span></td><td>Familia notificada</td></tr>
+            </table>
+          </div>
+          <div class="panel">
+            <h2>Reservas de hoy</h2>
+            <div class="sub">Laboratorio, SUM y sala audiovisual</div>
+            <table>
+              <tr><th>Recurso</th><th>Horario</th><th>Docente</th></tr>
+              <tr><td>Laboratorio</td><td>09:40–10:20</td><td>Prof. Ibáñez</td></tr>
+              <tr><td>SUM</td><td>11:00–12:20</td><td>Prof. Roldán</td></tr>
+              <tr><td>Sala audiovisual</td><td>14:10–14:50</td><td>Prof. Castro</td></tr>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- DASHBOARD DIRECTIVO -->
+      <section class="view" id="view-dashboard-directivo">
+        <div class="grid">
+          <div class="stat"><div class="n">92%</div><div class="l">ASISTENCIA PROMEDIO (30 DÍAS)</div></div>
+          <div class="stat warn"><div class="n">14</div><div class="l">ALUMNOS CON 3+ AUSENCIAS SIN JUSTIFICAR</div></div>
+          <div class="stat bad"><div class="n">3</div><div class="l">INCIDENTES GRAVES ABIERTOS</div></div>
+          <div class="stat good"><div class="n">78%</div><div class="l">OCUPACIÓN DE RECURSOS</div></div>
+        </div>
+
+        <div class="panel">
+          <h2>Alertas activas</h2>
+          <div class="sub">Situaciones que requieren seguimiento del equipo directivo</div>
+          <div class="alert-row"><span><strong>5°C</strong> — 2 incidentes graves sin resolver hace más de 5 días</span><span class="badge alerta">Grave</span></div>
+          <div class="alert-row"><span><strong>M. Aguirre (5°C)</strong> — 4 ausencias sin justificar en las últimas 2 semanas</span><span class="badge alerta">Grave</span></div>
+          <div class="alert-row warn"><span><strong>4°B</strong> — asistencia por debajo del 90% en el último mes</span><span class="badge leve">Atención</span></div>
+          <div class="alert-row warn"><span><strong>Laboratorio</strong> — ocupación al 95%, posible cuello de botella</span><span class="badge leve">Atención</span></div>
+        </div>
+
+        <div class="three-col">
+          <div class="panel">
+            <h2>Asistencia por curso</h2>
+            <div class="sub">Último mes</div>
+            <div class="chart-bars" id="chartAsistencia"></div>
+          </div>
+          <div class="panel">
+            <h2>Incidentes por severidad</h2>
+            <div class="sub">Últimos 30 días</div>
+            <div id="donutIncidentes"></div>
+          </div>
+          <div class="panel">
+            <h2>Ocupación de recursos</h2>
+            <div class="sub">Semana actual</div>
+            <div class="chart-bars" id="chartRecursos"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Evolución de asistencia — colegio</h2>
+          <div class="sub">Últimas 8 semanas</div>
+          <div id="lineChart"></div>
+        </div>
+      </section>
+
+      <!-- ASISTENCIA -->
+      <section class="view" id="view-asistencia">
+        <div class="notice" id="asistenciaNotice">
+          Módulo de asistencia propio de SIGE. No depende del sistema histórico del colegio — el registro, cálculo y notificación se hacen íntegramente acá.
+        </div>
+        <div class="toolbar">
+          <select id="cursoSelect" onchange="renderRoster()"></select>
+          <select id="turnoSelect" onchange="renderRoster()">
+            <option value="manana">Turno mañana — Preceptor</option>
+            <option value="tarde">Turno tarde — Ed. Física</option>
+          </select>
+          <input type="date" id="fechaInput" onchange="renderRoster()">
+          <button class="btn" id="guardarAsistBtn" onclick="guardarAsistencia()">Guardar asistencia</button>
+        </div>
+        <div class="panel" id="rosterPanel"></div>
+      </section>
+
+      <!-- CONVIVENCIA -->
+      <section class="view" id="view-convivencia">
+        <div class="two-col">
+          <div class="panel">
+            <h2>Registrar incidente</h2>
+            <div class="sub">La severidad grave dispara notificación automática a la familia</div>
+            <form class="stack" onsubmit="return registrarIncidente(event)" id="incidenteForm">
+              <label>Alumno
+                <select id="incAlumno" style="width:100%;margin-top:4px;"></select>
+              </label>
+              <label>Severidad
+                <select id="incSeveridad" style="width:100%;margin-top:4px;">
+                  <option value="leve">Leve</option>
+                  <option value="grave">Grave</option>
+                </select>
+              </label>
+              <label>Descripción
+                <textarea id="incDesc" style="width:100%;" placeholder="Detalle del incidente..."></textarea>
+              </label>
+              <button class="btn" type="submit">Registrar incidente</button>
+            </form>
+          </div>
+          <div class="panel">
+            <h2>Historial de incidentes</h2>
+            <table id="incidentesTable">
+              <tr><th>Alumno</th><th>Severidad</th><th>Descripción</th><th>Notificación</th></tr>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESERVAS -->
+      <section class="view" id="view-reservas">
+        <div class="toolbar">
+          <select id="recursoFiltro" onchange="renderCalendario(); renderListaDia();">
+            <option value="todos">Todos los recursos</option>
+            <option value="Laboratorio">Laboratorio</option>
+            <option value="SUM">SUM</option>
+            <option value="Sala audiovisual">Sala audiovisual</option>
+            <option value="Cancha cubierta">Cancha cubierta</option>
+          </select>
+          <span class="readonly-tag" id="semanaLabel">Semana del 15 al 19 de septiembre</span>
+          <div class="view-toggle" style="margin-left:auto;display:flex;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;">
+            <button class="toggle-btn active" id="btnVistaCal" onclick="setVistaReservas('calendario')">Calendario</button>
+            <button class="toggle-btn" id="btnVistaLista" onclick="setVistaReservas('lista')">Lista del día</button>
+          </div>
+        </div>
+
+        <div class="panel" id="panelCalendario">
+          <h2>Calendario semanal</h2>
+          <div class="sub">Hacé clic en un horario libre para reservarlo</div>
+          <div class="cal-wrap">
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+          <div class="cal-legend">
+            <span><span class="dot" style="background:var(--blue)"></span>Reservado por otro docente</span>
+            <span><span class="dot" style="background:var(--green)"></span>Reservado por vos</span>
+            <span><span class="dot" style="background:#e7e4d8;border:1px solid var(--line)"></span>Disponible</span>
+          </div>
+        </div>
+
+        <div class="panel" id="panelLista" style="display:none;">
+          <div class="toolbar" style="margin-bottom:10px;">
+            <h2 style="margin:0;">Reservas del día</h2>
+            <select id="diaListaSelect" onchange="renderListaDia()" style="margin-left:auto;">
+              <option value="0">Lunes 15</option>
+              <option value="1">Martes 16</option>
+              <option value="2">Miércoles 17</option>
+              <option value="3">Jueves 18</option>
+              <option value="4">Viernes 19</option>
+            </select>
+          </div>
+          <div class="sub">Todas las reservas ordenadas por horario</div>
+          <table id="listaDiaTable">
+            <tr><th>Horario</th><th>Recurso</th><th>Docente</th><th>Motivo</th><th></th></tr>
+          </table>
+          <div class="empty" id="listaDiaEmpty" style="display:none;">No hay reservas para este día.</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal Justificación -->
+<div class="modal-overlay" id="justModal">
+  <div class="modal">
+    <h3>Justificar ausencia</h3>
+    <div class="sub" id="justAlumnoLabel">Alumno</div>
+    <form class="stack" onsubmit="return confirmarJustificacion(event)">
+      <label>Motivo
+        <textarea id="justMotivo" placeholder="Ej: turno médico, certificado adjunto..." style="width:100%;margin-top:4px;"></textarea>
+      </label>
+      <label>Adjuntar nota médica u otro respaldo (opcional)
+        <input type="file" id="justArchivo" style="width:100%;margin-top:4px;" accept="image/*,.pdf">
+        <div class="file-hint" id="justArchivoNombre"></div>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn ghost" onclick="cerrarModalJust()">Cancelar</button>
+        <button type="submit" class="btn">Guardar justificación</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Reserva -->
+<div class="modal-overlay" id="reservaModal">
+  <div class="modal">
+    <h3>Reservar recurso</h3>
+    <div class="sub" id="reservaSlotLabel">Recurso — horario</div>
+    <form class="stack" onsubmit="return confirmarReserva(event)">
+      <label>Docente
+        <input type="text" id="reservaDocente" placeholder="Nombre y apellido" style="width:100%;margin-top:4px;">
+      </label>
+      <label>Motivo / actividad
+        <input type="text" id="reservaMotivo" placeholder="Ej: práctica de laboratorio" style="width:100%;margin-top:4px;">
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn ghost" onclick="cerrarModalReserva()">Cancelar</button>
+        <button type="submit" class="btn">Confirmar reserva</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const CURSOS = {
+  "4°B": ["Agustina Lopez","Bautista Nuñez","Camila Sosa","Diego Farías","Emilia Torres","Franco Medina","Guadalupe Ríos","Ignacio Paz"],
+  "3°A": ["Tomás Ferreyra","Valentina Díaz","Santiago Molina","Martina Acosta"],
+  "5°C": ["Mateo Aguirre","Lucía Herrera","Benjamín Suárez","Sofía Rojas"]
+};
+
+let asistenciaData = {};
+let justificaciones = {}; // key: curso|fecha|alumno -> {motivo, archivoNombre}
+let incidentes = [
+  {alumno:"T. Ferreyra", severidad:"leve", desc:"Falta de material reiterada", notificado:false},
+  {alumno:"M. Aguirre", severidad:"grave", desc:"Conflicto entre pares durante recreo", notificado:true}
+];
+
+const DIAS = ["Lun 15","Mar 16","Mié 17","Jue 18","Vie 19"];
+const HORARIOS = ["08:00","08:40","09:40","10:20","11:00","11:40","14:10","14:50"];
+const RECURSOS = ["Laboratorio","SUM","Sala audiovisual","Cancha cubierta"];
+
+// eventos: {recurso, dia, horario, docente, motivo, mine}
+let eventosCalendario = [
+  {recurso:"Laboratorio", dia:0, horario:"09:40", docente:"Prof. Ibáñez", motivo:"Práctica de química", mine:false},
+  {recurso:"SUM", dia:0, horario:"11:00", docente:"Prof. Roldán", motivo:"Ensayo acto", mine:false},
+  {recurso:"Sala audiovisual", dia:1, horario:"14:10", docente:"Prof. Castro", motivo:"Proyección documental", mine:false},
+  {recurso:"Laboratorio", dia:2, horario:"08:40", docente:"Prof. Medina", motivo:"Disección", mine:true},
+  {recurso:"Cancha cubierta", dia:3, horario:"11:40", docente:"Prof. Nuñez", motivo:"Educación física", mine:false},
+];
+
+let currentRole = "preceptor";
+let pendingJust = null; // {key, alumno}
+let pendingReserva = null; // {recurso, dia, horario}
+
+const NAV = {
+  preceptor: [
+    {id:"dashboard", label:"Panel general"},
+    {id:"asistencia", label:"Asistencia"},
+    {id:"convivencia", label:"Convivencia"},
+    {id:"reservas", label:"Reserva de recursos"}
+  ],
+  docente: [
+    {id:"dashboard", label:"Panel general"},
+    {id:"asistencia", label:"Asistencia (solo lectura)"},
+    {id:"convivencia", label:"Convivencia"},
+    {id:"reservas", label:"Reserva de recursos"}
+  ],
+  directivo: [
+    {id:"dashboard-directivo", label:"Panel general"},
+    {id:"asistencia", label:"Asistencia (solo lectura)"},
+    {id:"convivencia", label:"Convivencia"},
+    {id:"reservas", label:"Reserva de recursos"}
+  ]
+};
+
+function setRole(role){
+  currentRole = role;
+  renderNav();
+  showView(NAV[role][0].id);
+}
+
+function renderNav(){
+  const nav = document.getElementById("navList");
+  nav.innerHTML = "";
+  NAV[currentRole].forEach((item,i)=>{
+    const b = document.createElement("button");
+    b.className = "nav-item" + (i===0 ? " active":"");
+    b.textContent = item.label;
+    b.onclick = ()=> showView(item.id, b);
+    nav.appendChild(b);
+  });
+}
+
+function showView(id, btnEl){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+id).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  if(btnEl) btnEl.classList.add("active");
+  else { const items=document.querySelectorAll(".nav-item"); if(items[0]) items[0].classList.add("active"); }
+
+  const titles = {
+    "dashboard":"Panel general","dashboard-directivo":"Panel general — Dirección",
+    asistencia:"Asistencia", convivencia:"Convivencia", reservas:"Reserva de recursos"
+  };
+  document.getElementById("viewTitle").textContent = titles[id];
+  document.getElementById("viewMeta").textContent =
+    currentRole==="preceptor" ? "Preceptor — 4°B" :
+    currentRole==="docente" ? "Docente" : "Equipo directivo";
+
+  document.getElementById("asistenciaNotice").style.display = currentRole==="preceptor" ? "block":"none";
+  document.getElementById("guardarAsistBtn").style.display = currentRole==="preceptor" ? "inline-block":"none";
+
+  if(id==="asistencia") renderRoster();
+  if(id==="convivencia") renderConvivencia();
+  if(id==="reservas"){ renderCalendario(); renderListaDia(); }
+  if(id==="dashboard-directivo") renderDirectivoCharts();
+}
+
+/* ---------- ASISTENCIA ---------- */
+function renderRoster(){
+  const cursoSel = document.getElementById("cursoSelect");
+  if(cursoSel.options.length===0){
+    Object.keys(CURSOS).forEach(c=>{
+      const o=document.createElement("option"); o.value=c; o.textContent=c; cursoSel.appendChild(o);
+    });
+  }
+  const fechaInput = document.getElementById("fechaInput");
+  if(!fechaInput.value) fechaInput.value = new Date().toISOString().slice(0,10);
+
+  const curso = cursoSel.value;
+  const fecha = fechaInput.value;
+  const key = curso+"|"+fecha;
+  if(!asistenciaData[key]) asistenciaData[key] = {};
+
+  const readonly = currentRole !== "preceptor";
+  const panel = document.getElementById("rosterPanel");
+  let html = `<h2>${curso} <span class="readonly-tag">${readonly ? "solo lectura" : "turno mañana"}</span></h2><div class="sub">${fecha}</div>`;
+  CURSOS[curso].forEach(alumno=>{
+    const estado = asistenciaData[key][alumno] || "presente";
+    const justKey = key+"|"+alumno;
+    const just = justificaciones[justKey];
+    html += `<div class="roster-row"><div>
+        <div class="roster-name">${alumno}</div>
+        ${estado==="justificado" && just ? `<div class="roster-sub">${just.motivo}${just.archivoNombre ? ' · 📎 '+just.archivoNombre : ''}</div>` : ""}
+      </div><div class="att-buttons">`;
+    ["presente","tarde","ausente","justificado"].forEach(e=>{
+      const sel = estado===e ? "selected":"";
+      const dis = readonly ? "disabled style='cursor:default;opacity:.6;'" : `onclick="handleEstadoClick('${key}','${alumno}','${e}')"`;
+      html += `<button class="att-btn sel-${e} ${sel}" ${dis}>${e.charAt(0).toUpperCase()+e.slice(1)}</button>`;
+    });
+    html += `</div></div>`;
+  });
+  panel.innerHTML = html;
+}
+
+function handleEstadoClick(key, alumno, estado){
+  if(estado === "justificado"){
+    pendingJust = {key, alumno};
+    document.getElementById("justAlumnoLabel").textContent = alumno + " — " + key.split("|")[0];
+    document.getElementById("justMotivo").value = "";
+    document.getElementById("justArchivo").value = "";
+    document.getElementById("justArchivoNombre").textContent = "";
+    document.getElementById("justModal").classList.add("open");
+  } else {
+    asistenciaData[key][alumno] = estado;
+    renderRoster();
+  }
+}
+
+function cerrarModalJust(){
+  document.getElementById("justModal").classList.remove("open");
+  pendingJust = null;
+}
+
+function confirmarJustificacion(e){
+  e.preventDefault();
+  if(!pendingJust) return false;
+  const motivo = document.getElementById("justMotivo").value || "Sin motivo especificado";
+  const archivoInput = document.getElementById("justArchivo");
+  const archivoNombre = archivoInput.files.length ? archivoInput.files[0].name : null;
+
+  const {key, alumno} = pendingJust;
+  asistenciaData[key][alumno] = "justificado";
+  justificaciones[key+"|"+alumno] = {motivo, archivoNombre};
+
+  cerrarModalJust();
+  renderRoster();
+  return false;
+}
+document.getElementById("justArchivo").addEventListener("change", function(){
+  document.getElementById("justArchivoNombre").textContent = this.files.length ? "Archivo: "+this.files[0].name : "";
+});
+
+function guardarAsistencia(){
+  alert("Asistencia guardada. Se notificará automáticamente a las familias de los alumnos marcados ausentes sin justificar.");
+}
+
+/* ---------- CONVIVENCIA ---------- */
+function renderConvivencia(){
+  const sel = document.getElementById("incAlumno");
+  if(sel.options.length===0){
+    Object.values(CURSOS).flat().forEach(a=>{
+      const o=document.createElement("option"); o.value=a; o.textContent=a; sel.appendChild(o);
+    });
+  }
+  const table = document.getElementById("incidentesTable");
+  table.innerHTML = `<tr><th>Alumno</th><th>Severidad</th><th>Descripción</th><th>Notificación</th></tr>`;
+  incidentes.forEach(inc=>{
+    table.innerHTML += `<tr>
+      <td>${inc.alumno}</td>
+      <td><span class="badge ${inc.severidad}">${inc.severidad}</span></td>
+      <td>${inc.desc}</td>
+      <td>${inc.notificado ? '<span class="badge grave">Familia notificada</span>' : '<span class="readonly-tag">No aplica</span>'}</td>
+    </tr>`;
+  });
+  const form = document.getElementById("incidenteForm");
+  const readonly = currentRole === "docente";
+  form.querySelectorAll("select,textarea,button").forEach(el=>el.disabled = readonly);
+}
+
+function registrarIncidente(e){
+  e.preventDefault();
+  const alumno = document.getElementById("incAlumno").value;
+  const sev = document.getElementById("incSeveridad").value;
+  const desc = document.getElementById("incDesc").value || "(sin descripción)";
+  incidentes.unshift({alumno, severidad:sev, desc, notificado: sev==="grave"});
+  document.getElementById("incDesc").value = "";
+  renderConvivencia();
+  if(sev==="grave") alert("Incidente grave registrado. Notificación automática enviada a la familia de "+alumno+".");
+  return false;
+}
+
+/* ---------- RESERVAS: CALENDARIO / LISTA ---------- */
+let vistaReservasActual = "calendario";
+
+function setVistaReservas(vista){
+  vistaReservasActual = vista;
+  document.getElementById("btnVistaCal").classList.toggle("active", vista==="calendario");
+  document.getElementById("btnVistaLista").classList.toggle("active", vista==="lista");
+  document.getElementById("panelCalendario").style.display = vista==="calendario" ? "block":"none";
+  document.getElementById("panelLista").style.display = vista==="lista" ? "block":"none";
+  if(vista==="lista") renderListaDia();
+}
+
+function renderListaDia(){
+  const filtro = document.getElementById("recursoFiltro").value;
+  const diaIdx = parseInt(document.getElementById("diaListaSelect").value, 10);
+  const readonly = currentRole !== "preceptor" && currentRole !== "docente";
+
+  const evs = eventosCalendario
+    .map((ev, idx)=>({...ev, idx}))
+    .filter(ev=> ev.dia===diaIdx && (filtro==="todos" || ev.recurso===filtro))
+    .sort((a,b)=> a.horario.localeCompare(b.horario));
+
+  const table = document.getElementById("listaDiaTable");
+  const empty = document.getElementById("listaDiaEmpty");
+  table.innerHTML = `<tr><th>Horario</th><th>Recurso</th><th>Docente</th><th>Motivo</th><th></th></tr>`;
+
+  if(!evs.length){
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+  evs.forEach(ev=>{
+    table.innerHTML += `<tr>
+      <td>${ev.horario}</td>
+      <td>${ev.recurso}</td>
+      <td>${ev.docente}${ev.mine ? ' <span class="badge reservado">Vos</span>' : ''}</td>
+      <td>${ev.motivo || '—'}</td>
+      <td>${ev.mine ? `<button class="list-btn" onclick="liberarReserva(${ev.idx})">Liberar</button>` : ''}</td>
+    </tr>`;
+  });
+}
+
+function liberarReserva(idx){
+  eventosCalendario.splice(idx, 1);
+  renderListaDia();
+  renderCalendario();
+}
+
+function renderCalendario(){
+  const filtro = document.getElementById("recursoFiltro").value;
+  const grid = document.getElementById("calGrid");
+  let html = `<div class="cal-head">Hora</div>`;
+  DIAS.forEach(d=> html += `<div class="cal-head">${d}</div>`);
+
+  HORARIOS.forEach(h=>{
+    html += `<div class="cal-time">${h}</div>`;
+    DIAS.forEach((d,dIdx)=>{
+      const evsAqui = eventosCalendario.filter(ev=> ev.horario===h && ev.dia===dIdx && (filtro==="todos" || ev.recurso===filtro));
+      let cellContent = "";
+      if(evsAqui.length){
+        cellContent = evsAqui.map(ev=>
+          `<div class="ev ${ev.mine?'mine':''}" title="${ev.motivo}">${ev.recurso}<br>${ev.docente}</div>`
+        ).join("");
+        html += `<div class="cal-cell">${cellContent}</div>`;
+      } else {
+        const recursoParaReservar = filtro==="todos" ? RECURSOS[0] : filtro;
+        html += `<div class="cal-cell" onclick="abrirReserva('${recursoParaReservar}',${dIdx},'${h}')"></div>`;
+      }
+    });
+  });
+  grid.innerHTML = html;
+}
+
+function abrirReserva(recurso, dia, horario){
+  pendingReserva = {recurso, dia, horario};
+  document.getElementById("reservaSlotLabel").textContent = `${recurso} — ${DIAS[dia]}, ${horario}`;
+  document.getElementById("reservaDocente").value = "";
+  document.getElementById("reservaMotivo").value = "";
+  document.getElementById("reservaModal").classList.add("open");
+}
+function cerrarModalReserva(){
+  document.getElementById("reservaModal").classList.remove("open");
+  pendingReserva = null;
+}
+function confirmarReserva(e){
+  e.preventDefault();
+  if(!pendingReserva) return false;
+  const docente = document.getElementById("reservaDocente").value || "Sin asignar";
+  const motivo = document.getElementById("reservaMotivo").value || "";
+  eventosCalendario.push({...pendingReserva, docente, motivo, mine:true});
+  cerrarModalReserva();
+  renderCalendario();
+  renderListaDia();
+  return false;
+}
+
+/* ---------- DASHBOARD DIRECTIVO: GRÁFICOS ---------- */
+function renderDirectivoCharts(){
+  // Asistencia por curso
+  const asistData = [
+    {label:"1°A", value:96}, {label:"3°A", value:91},
+    {label:"4°B", value:89}, {label:"5°C", value:94}
+  ];
+  const maxA = 100;
+  document.getElementById("chartAsistencia").innerHTML = asistData.map(d=>`
+    <div class="bar-col">
+      <div class="bar-value">${d.value}%</div>
+      <div class="bar" style="height:${(d.value/maxA*100)}px; background:${d.value<90?'var(--amber)':'var(--green)'}"></div>
+      <div class="bar-label">${d.label}</div>
+    </div>`).join("");
+
+  // Ocupación de recursos
+  const recData = [
+    {label:"Lab.", value:95}, {label:"SUM", value:70},
+    {label:"Audiov.", value:55}, {label:"Cancha", value:82}
+  ];
+  document.getElementById("chartRecursos").innerHTML = recData.map(d=>`
+    <div class="bar-col">
+      <div class="bar-value">${d.value}%</div>
+      <div class="bar" style="height:${(d.value/100*100)}px; background:var(--blue)"></div>
+      <div class="bar-label">${d.label}</div>
+    </div>`).join("");
+
+  // Donut incidentes (leve/grave) hecho con SVG conic-like usando stroke-dasharray
+  const leves = 9, graves = 3, total = leves+graves;
+  const pctGrave = graves/total;
+  const circumference = 2*Math.PI*40;
+  const graveLen = circumference*pctGrave;
+  document.getElementById("donutIncidentes").innerHTML = `
+    <div class="donut-wrap">
+      <svg width="110" height="110" viewBox="0 0 110 110">
+        <circle cx="55" cy="55" r="40" fill="none" stroke="#f6ecd8" stroke-width="16"/>
+        <circle cx="55" cy="55" r="40" fill="none" stroke="#a3413a" stroke-width="16"
+          stroke-dasharray="${graveLen} ${circumference-graveLen}"
+          stroke-dashoffset="0" transform="rotate(-90 55 55)"/>
+        <text x="55" y="60" text-anchor="middle" font-size="18" font-weight="600" fill="#1c2b24">${total}</text>
+      </svg>
+      <div>
+        <div class="legend-item"><span class="dot" style="background:#b97a2c"></span>Leves — ${leves}</div>
+        <div class="legend-item"><span class="dot" style="background:#a3413a"></span>Graves — ${graves}</div>
+      </div>
+    </div>`;
+
+  // Línea de evolución (sparkline simple con polyline)
+  const serie = [88,90,87,91,89,93,92,94];
+  const w=520, h=110, pad=14;
+  const maxV = 100, minV = 80;
+  const pts = serie.map((v,i)=>{
+    const x = pad + i*((w-2*pad)/(serie.length-1));
+    const y = h-pad - ((v-minV)/(maxV-minV))*(h-2*pad);
+    return `${x},${y}`;
+  }).join(" ");
+  document.getElementById("lineChart").innerHTML = `
+    <svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="max-width:100%;">
+      <polyline points="${pts}" fill="none" stroke="#2f5d4f" stroke-width="2.5"/>
+      ${serie.map((v,i)=>{
+        const x = pad + i*((w-2*pad)/(serie.length-1));
+        const y = h-pad - ((v-minV)/(maxV-minV))*(h-2*pad);
+        return `<circle cx="${x}" cy="${y}" r="3.5" fill="#2f5d4f"/>`;
+      }).join("")}
+    </svg>`;
+}
+
+renderNav();
+showView("dashboard");
+</script>
+</body>
+</html>
